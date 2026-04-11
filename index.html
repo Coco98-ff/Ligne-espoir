@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Météo Bénin</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 16px;
+background: #fce4e8;
+color: #222;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* BOUTON FERMER */
+#fermer {
+position: fixed;
+top: 12px;
+right: 12px;
+z-index: 9999;
+background: rgba(255,255,255,0.9);
+color: #777;
+border: 1px solid #ccc;
+padding: 7px 14px;
+font-size: 13px;
+border-radius: 20px;
+cursor: pointer;
+}
+
+/* BLOC ROUGE — URGENCE */
+.urgence {
+background: #9b1c1c;
+color: white;
+padding: 16px;
+}
+
+.urgence h2 {
+font-size: 18px;
+font-weight: 800;
+margin-bottom: 12px;
+}
+
+.btn-num {
+display: flex;
+align-items: center;
+gap: 14px;
+background: white;
+color: #9b1c1c;
+font-weight: 700;
+font-size: 18px;
+padding: 14px 16px;
+border-radius: 8px;
+margin-bottom: 8px;
+width: 100%;
+min-height: 58px;
+}
+
+.btn-num .chiffre {
+font-size: 26px;
+font-weight: 900;
+min-width: 50px;
+}
+
+.btn-num .detail {
+display: flex;
+flex-direction: column;
+}
+
+.btn-num .detail-titre { font-size: 16px; font-weight: 700; }
+.btn-num .detail-sub { font-size: 12px; color: #666; font-weight: 400; }
+
+.urgence-note {
+font-size: 12px;
+color: rgba(255,255,255,0.8);
+margin-top: 8px;
+line-height: 1.5;
+}
+
+/* BLOC ROSE — LIGNE ESPOIR */
+.espoir {
+background: #fce4e8;
+border-left: 5px solid #be185d;
+padding: 18px 16px;
+border-bottom: 1px solid #f0b8c8;
+}
+
+.espoir h2 {
+font-size: 17px;
+font-weight: 800;
+color: #be185d;
+margin-bottom: 4px;
+}
+
+.espoir p {
+font-size: 13px;
+color: #555;
+margin-bottom: 14px;
+line-height: 1.5;
+}
+
+.btn-appel {
+display: flex;
+align-items: center;
+gap: 12px;
+background: #be185d;
+color: white;
+font-weight: 700;
+font-size: 17px;
+padding: 15px 16px;
+border-radius: 8px;
+margin-bottom: 10px;
+width: 100%;
+min-height: 54px;
+}
+
+.btn-wa {
+display: flex;
+align-items: center;
+gap: 12px;
+background: #15803d;
+color: white;
+font-weight: 700;
+font-size: 17px;
+padding: 15px 16px;
+border-radius: 8px;
+margin-bottom: 10px;
+width: 100%;
+min-height: 54px;
+}
+
+.espoir-note {
+font-size: 12px;
+color: #666;
+margin-top: 4px;
+line-height: 1.5;
+background: white;
+padding: 10px 12px;
+border-radius: 6px;
+border: 1px solid #f0b8c8;
+}
+
+/* BLOC SECURITE */
+.securite {
+background: #1e293b;
+color: #e2e8f0;
+padding: 16px;
+}
+
+.securite h3 {
+font-size: 11px;
+font-weight: 700;
+color: #94a3b8;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 10px;
+}
+
+.securite p {
+font-size: 13px;
+color: #cbd5e1;
+margin-bottom: 5px;
+line-height: 1.5;
+}
+
+/* BLOC FORMULAIRE */
+.formulaire {
+background: white;
+padding: 18px 16px;
+border-top: 1px solid #f0b8c8;
+}
+
+.alerte-form {
+background: #fef9c3;
+border: 1px solid #fbbf24;
+border-radius: 6px;
+padding: 10px 12px;
+font-size: 13px;
+color: #92400e;
+margin-bottom: 14px;
+line-height: 1.5;
+}
+
+.formulaire h3 {
+font-size: 14px;
+font-weight: 700;
+color: #333;
+margin-bottom: 12px;
+}
+
+.form-groupe { margin-bottom: 12px; }
+
+.form-groupe label {
+display: block;
+font-size: 12px;
+font-weight: 700;
+color: #444;
+margin-bottom: 5px;
+}
+
+.form-groupe select,
+.form-groupe input {
+width: 100%;
+padding: 12px;
+border: 1px solid #ddd;
+border-radius: 6px;
+font-size: 15px;
+color: #222;
+background: white;
+-webkit-appearance: none;
+appearance: none;
+}
+
+.btn-envoyer {
+width: 100%;
+padding: 13px;
+background: #6b1a2a;
+color: white;
+font-size: 15px;
+font-weight: 700;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+margin-top: 4px;
+}
+
+.note-anon {
+font-size: 12px;
+color: #888;
+margin-top: 10px;
+line-height: 1.6;
+}
+
+/* FOOTER */
+footer {
+background: #f9fafb;
+padding: 16px;
+text-align: center;
+border-top: 1px solid #e5e7eb;
+}
+
+footer p {
+font-size: 11px;
+color: #888;
+line-height: 1.8;
+}
+
+/* TOAST */
+#toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%) translateY(120px);
+background: #1e293b;
+color: white;
+padding: 12px 20px;
+border-radius: 8px;
+font-size: 14px;
+z-index: 9998;
+transition: transform 0.3s;
+pointer-events: none;
+white-space: nowrap;
+}
+#toast.visible { transform: translateX(-50%) translateY(0); }
+
+@media (min-width: 600px) {
+body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 30px rgba(0,0,0,0.1); }
+}
+</style>
+
+</head>
+<body>
+
+<!-- FERMER -->
+
+<button id="fermer" onclick="quitter()">✕ Fermer</button>
+
+<!-- URGENCE -->
+
+<div class="urgence">
+  <h2>🚨 En danger maintenant ?</h2>
+
+  <a href="tel:117" class="btn-num">
+    <span class="chiffre">117</span>
+    <span class="detail">
+      <span class="detail-titre">Police Secours</span>
+      <span class="detail-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <a href="tel:166" class="btn-num">
+    <span class="chiffre">166</span>
+    <span class="detail">
+      <span class="detail-titre">Urgence nationale</span>
+      <span class="detail-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <a href="tel:118" class="btn-num">
+    <span class="chiffre">118</span>
+    <span class="detail">
+      <span class="detail-titre">Pompiers / Secours</span>
+      <span class="detail-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <p class="urgence-note">
+    Si un numéro ne répond pas → essayez le suivant.<br>
+    Sinon : rendez-vous au commissariat ou à la gendarmerie la plus proche.
+  </p>
+</div>
+
+<!-- LIGNE ESPOIR -->
+
+<div class="espoir">
+  <h2>💜 Besoin d'aide ?</h2>
+  <p>
+    Ligne Espoir — Nouvel Espoir ONG Bénin<br>
+    Écoute · Orientation · Confidentialité<br>
+    <strong>Pas une ligne d'urgence.</strong>
+  </p>
+
+  <a href="tel:+2290164596381" class="btn-appel">
+    📞 &nbsp;+229 01 64 59 63 81
+  </a>
+
+  <a href="https://wa.me/2290164596381" class="btn-wa">
+    💬 &nbsp;WhatsApp
+  </a>
+
+  <div class="espoir-note">
+    Si personne ne répond → envoyez un message WhatsApp, nous vous rappelons.<br>
+    Autre option : <strong>UNFPA Bénin +229 21 30 76 50</strong> ou centre de santé le plus proche.
+  </div>
+</div>
+
+<!-- SÉCURITÉ -->
+
+<div class="securite">
+  <h3>🔒 Protégez vos traces</h3>
+  <p><strong>Historique Android :</strong> Menu ⋮ → Historique → Effacer</p>
+  <p><strong>Historique iPhone :</strong> Réglages → Safari → Effacer</p>
+  <p><strong>WhatsApp :</strong> Maintenez le message → Supprimer</p>
+  <p><strong>Journal d'appel :</strong> Téléphone → Récents → Maintenez → Supprimer</p>
+</div>
+
+<!-- FORMULAIRE -->
+
+<div class="formulaire">
+  <div class="alerte-form">
+    ⚠️ <strong>Pas pour les urgences.</strong> En danger → appelez le <strong>117</strong> ou <strong>166</strong> ci-dessus.
+  </div>
+
+  <h3>Signalement (non urgent)</h3>
+
+  <div class="form-groupe">
+    <label for="type">Type de situation</label>
+    <select id="type">
+      <option value="">— Choisir —</option>
+      <option>Violence conjugale / familiale</option>
+      <option>Violence psychologique</option>
+      <option>Violence sexuelle</option>
+      <option>Violence sur mineur</option>
+      <option>Harcèlement</option>
+      <option>Autre</option>
+    </select>
+  </div>
+
+  <div class="form-groupe">
+    <label for="ville">Ville / Département</label>
+    <input type="text" id="ville" placeholder="Ex. Parakou, Cotonou, Abomey...">
+  </div>
+
+<button class="btn-envoyer" onclick="envoyer()">Envoyer via WhatsApp →</button>
+
+  <p class="note-anon">
+    ✓ Anonymat total — aucun nom requis.<br>
+    ✓ Un message WhatsApp s'ouvrira automatiquement.
+  </p>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+  <p>
+    <strong>Ligne Espoir — Nouvel Espoir ONG Bénin</strong><br>
+    N°2024-4/025/PDB/SG/SAG/SA — Parakou, Bénin<br>
+    Informations vérifiées — Avril 2025<br>
+    117 · 166 · 118 peuvent évoluer — en cas de doute,<br>
+    rendez-vous au commissariat le plus proche.
+  </p>
+</footer>
+
+<div id="toast">✅ Signalement envoyé sur WhatsApp</div>
+
+<script>
+function quitter() {
+  try { history.replaceState(null, '', '/'); } catch(e) {}
+  window.location.replace('https://www.google.com/search?q=meteo+benin');
+}
+
+async function envoyer() {
+  var type = document.getElementById('type').value;
+  var ville = document.getElementById('ville').value.trim();
+
+  if (!type) { alert('Choisissez un type de situation.'); return; }
+  if (!ville) { alert('Indiquez votre ville ou département.'); return; }
+
+  var btn = document.querySelector('.btn-envoyer');
+  btn.textContent = 'Ouverture WhatsApp...';
+  btn.disabled = true;
+
+  var msg = encodeURIComponent(
+    '🔴 *SIGNALEMENT — Ligne Espoir*\n\n' +
+    '📌 *Situation :* ' + type + '\n' +
+    '📍 *Localisation :* ' + ville + '\n\n' +
+    '_Via formulaire web — Ligne Espoir_'
+  );
+  window.open('https://wa.me/2290164596381?text=' + msg, '_blank');
+
+  try {
+    await fetch('https://formspree.io/f/mgoldabp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        'Situation': type,
+        'Localisation': ville,
+        '_subject': '🔴 Signalement Ligne Espoir — ' + type + ' — ' + ville
+      })
+    });
+  } catch(e) {}
+
+  document.getElementById('type').value = '';
+  document.getElementById('ville').value = '';
+  btn.textContent = 'Envoyer via WhatsApp →';
+  btn.disabled = false;
+
+  var t = document.getElementById('toast');
+  t.classList.add('visible');
+  setTimeout(function() { t.classList.remove('visible'); }, 5000);
+}
+</script>
+
+</body>
+</html>
