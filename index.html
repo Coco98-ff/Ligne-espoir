@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Météo Bénin</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–rouge: #b91c1c;
+–rose: #be185d;
+–rose-clair: #fdf2f8;
+–gris: #374151;
+–gris-clair: #f9fafb;
+–gris-texte: #6b7280;
+–blanc: #ffffff;
+–bordure: #e5e7eb;
+}
+
+body {
+font-family: system-ui, -apple-system, sans-serif;
+font-size: 16px;
+line-height: 1.5;
+color: var(–gris);
+background: var(–gris-clair);
+-webkit-text-size-adjust: 100%;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── QUITTER — discret, pas suspect ── */
+#quitter {
+position: fixed;
+top: 10px;
+right: 10px;
+z-index: 9999;
+background: rgba(255,255,255,0.85);
+color: #888;
+border: 1px solid #ddd;
+padding: 6px 12px;
+font-size: 12px;
+font-weight: 500;
+border-radius: 20px;
+cursor: pointer;
+backdrop-filter: blur(4px);
+-webkit-backdrop-filter: blur(4px);
+}
+#quitter:active { background: #f3f4f6; }
+
+/* ── BLOCS ── */
+.bloc { padding: 20px 16px; border-bottom: 1px solid var(–bordure); }
+
+/* ── DANGER ── */
+.bloc-danger {
+background: var(–rouge);
+color: #fff;
+padding: 16px;
+padding-top: 20px;
+}
+.bloc-danger .titre {
+font-size: 17px;
+font-weight: 800;
+margin-bottom: 12px;
+}
+.btn-urgence {
+display: flex;
+align-items: center;
+gap: 12px;
+background: #fff;
+color: var(–rouge);
+font-weight: 700;
+font-size: 18px;
+padding: 14px 16px;
+border-radius: 8px;
+margin-bottom: 8px;
+width: 100%;
+text-decoration: none;
+min-height: 56px;
+}
+.btn-urgence:active { opacity: 0.88; }
+.btn-urgence .num { font-size: 22px; font-weight: 900; min-width: 44px; }
+.btn-urgence .desc { display: flex; flex-direction: column; }
+.btn-urgence .desc-main { font-size: 15px; font-weight: 700; }
+.btn-urgence .desc-sub { font-size: 12px; font-weight: 400; color: #666; }
+.note-danger {
+font-size: 12px;
+color: rgba(255,255,255,0.75);
+margin-top: 8px;
+line-height: 1.5;
+}
+
+/* ── LIGNE ESPOIR ── */
+.bloc-ligne {
+background: var(–rose-clair);
+border-left: 4px solid var(–rose);
+}
+.bloc-ligne .titre {
+font-size: 15px;
+font-weight: 700;
+color: var(–rose);
+margin-bottom: 4px;
+}
+.bloc-ligne .sous-titre {
+font-size: 13px;
+color: var(–gris-texte);
+margin-bottom: 14px;
+line-height: 1.45;
+}
+.btn-rose {
+display: flex;
+align-items: center;
+gap: 10px;
+background: var(–rose);
+color: #fff;
+font-weight: 700;
+font-size: 16px;
+padding: 14px 16px;
+border-radius: 8px;
+margin-bottom: 8px;
+text-decoration: none;
+width: 100%;
+min-height: 52px;
+}
+.btn-rose:active { opacity: 0.88; }
+.btn-rose.wa { background: #15803d; }
+.note-ligne {
+font-size: 12px;
+color: var(–gris-texte);
+margin-top: 8px;
+line-height: 1.5;
+padding: 10px 12px;
+background: #fff;
+border-radius: 6px;
+border: 1px solid var(–bordure);
+}
+
+/* ── SÉCURITÉ ── */
+.bloc-securite {
+background: #1e293b;
+color: #e2e8f0;
+padding: 16px;
+border-bottom: none;
+}
+.bloc-securite .titre {
+font-size: 11px;
+font-weight: 700;
+color: #94a3b8;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 10px;
+}
+.bloc-securite p {
+font-size: 13px;
+margin-bottom: 5px;
+color: #cbd5e1;
+line-height: 1.5;
+}
+.bloc-securite strong { color: #f8fafc; }
+
+/* ── FORMULAIRE (visuellement secondaire) ── */
+.bloc-form { background: var(–blanc); }
+.form-header {
+font-size: 13px;
+color: var(–gris-texte);
+padding-bottom: 14px;
+border-bottom: 1px solid var(–bordure);
+margin-bottom: 14px;
+line-height: 1.5;
+}
+.form-header strong { color: var(–rouge); }
+.form-titre {
+font-size: 14px;
+font-weight: 700;
+color: var(–gris);
+margin-bottom: 12px;
+}
+.form-group { margin-bottom: 12px; }
+.form-group label {
+display: block;
+font-size: 12px;
+font-weight: 600;
+color: var(–gris);
+margin-bottom: 5px;
+}
+.form-group select,
+.form-group input {
+width: 100%;
+padding: 11px 12px;
+border: 1px solid var(–bordure);
+border-radius: 6px;
+font-size: 15px;
+color: var(–gris);
+background: var(–blanc);
+-webkit-appearance: none;
+appearance: none;
+}
+.form-group select:focus,
+.form-group input:focus {
+outline: 2px solid var(–rose);
+border-color: var(–rose);
+}
+.btn-envoyer {
+width: 100%;
+padding: 13px;
+background: #4b5563;
+color: #fff;
+font-size: 14px;
+font-weight: 700;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+margin-top: 4px;
+}
+.btn-envoyer:active { background: #374151; }
+.note-form {
+font-size: 12px;
+color: var(–gris-texte);
+margin-top: 10px;
+line-height: 1.6;
+}
+
+/* ── INFO ── */
+.bloc-info { background: var(–blanc); }
+.bloc-info .titre {
+font-size: 14px;
+font-weight: 700;
+color: var(–gris);
+margin-bottom: 10px;
+}
+.info-item {
+display: flex;
+gap: 10px;
+margin-bottom: 9px;
+align-items: flex-start;
+font-size: 13px;
+color: var(–gris-texte);
+line-height: 1.5;
+}
+.info-item .e { flex-shrink: 0; margin-top: 1px; }
+
+/* ── FOOTER ── */
+footer {
+background: var(–gris-clair);
+padding: 16px;
+text-align: center;
+border-top: 1px solid var(–bordure);
+}
+footer p { font-size: 11px; color: var(–gris-texte); line-height: 1.8; }
+footer strong { color: var(–gris); }
+
+/* ── TOAST ── */
+#toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%) translateY(120px);
+background: #1e293b;
+color: #fff;
+padding: 11px 18px;
+border-radius: 8px;
+font-size: 14px;
+font-weight: 500;
+z-index: 9998;
+transition: transform 0.3s ease;
+pointer-events: none;
+white-space: nowrap;
+}
+#toast.visible { transform: translateX(-50%) translateY(0); }
+
+@media (min-width: 600px) {
+body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 40px rgba(0,0,0,0.08); }
+}
+</style>
+
+</head>
+<body>
+
+<!-- QUITTER — discret -->
+
+<button id="quitter" onclick="quitterVite()">✕ Fermer</button>
+
+<!-- ══ BLOC 1 — DANGER IMMÉDIAT ══ -->
+
+<div class="bloc-danger">
+  <p class="titre">🚨 En danger maintenant ?</p>
+
+  <a href="tel:117" class="btn-urgence">
+    <span class="num">117</span>
+    <span class="desc">
+      <span class="desc-main">Police Secours</span>
+      <span class="desc-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <a href="tel:166" class="btn-urgence">
+    <span class="num">166</span>
+    <span class="desc">
+      <span class="desc-main">Urgence nationale</span>
+      <span class="desc-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <a href="tel:118" class="btn-urgence">
+    <span class="num">118</span>
+    <span class="desc">
+      <span class="desc-main">Pompiers / Secours</span>
+      <span class="desc-sub">Gratuit — Bénin</span>
+    </span>
+  </a>
+
+  <p class="note-danger">
+    Si un numéro ne répond pas → essayez le suivant.<br>
+    Dernier recours : rendez-vous au commissariat ou brigade de gendarmerie le plus proche.
+  </p>
+</div>
+
+<!-- ══ BLOC 2 — LIGNE ESPOIR ══ -->
+
+<div class="bloc bloc-ligne">
+  <p class="titre">💜 Besoin d'être écouté(e) ?</p>
+  <p class="sous-titre">
+    Ligne Espoir — Nouvel Espoir ONG Bénin<br>
+    Écoute · Orientation · Confidentialité<br>
+    <strong>Pas une ligne d'urgence.</strong>
+  </p>
+
+  <a href="tel:+2290164596381" class="btn-rose">
+    📞 &nbsp;+229 01 64 59 63 81
+  </a>
+
+  <a href="https://wa.me/2290164596381" class="btn-rose wa">
+    💬 &nbsp;WhatsApp — message discret
+  </a>
+
+  <div class="note-ligne">
+    Si personne ne répond → laissez un message WhatsApp, nous vous rappelons.<br>
+    Vous pouvez aussi appeler le <strong>UNFPA Bénin : +229 21 30 76 50</strong> ou vous rendre au <strong>Centre de santé le plus proche</strong>.
+  </div>
+</div>
+
+<!-- ══ BLOC 3 — SÉCURITÉ ══ -->
+
+<div class="bloc-securite">
+  <p class="titre">🔒 Protégez vos traces</p>
+  <p><strong>Historique :</strong> Android → Menu ⋮ → Historique → Effacer</p>
+  <p><strong>Historique :</strong> iPhone → Réglages → Safari → Effacer</p>
+  <p><strong>WhatsApp :</strong> après envoi, appuyez longuement → Supprimer</p>
+  <p><strong>Journal d'appel :</strong> Téléphone → Récents → Maintenez sur le numéro → Supprimer</p>
+</div>
+
+<!-- ══ BLOC 4 — FORMULAIRE (secondaire) ══ -->
+
+<div class="bloc bloc-form">
+  <div class="form-header">
+    <strong>⚠️ Pas pour les urgences.</strong> En danger → appelez le <strong>117</strong> ou <strong>166</strong> ci-dessus.
+  </div>
+
+  <p class="form-titre">Signalement écrit (non urgent)</p>
+
+  <div class="form-group">
+    <label for="type-violence">Type de situation *</label>
+    <select id="type-violence">
+      <option value="">— Choisir —</option>
+      <option>Violence conjugale / familiale</option>
+      <option>Violence psychologique</option>
+      <option>Violence sexuelle</option>
+      <option>Violence sur mineur</option>
+      <option>Harcèlement</option>
+      <option>Autre</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="localisation">Ville / Département *</label>
+    <input type="text" id="localisation" placeholder="Ex. Parakou, Cotonou…">
+  </div>
+
+<button class="btn-envoyer" onclick="submitForm()">Envoyer via WhatsApp →</button>
+
+  <p class="note-form">
+    ✓ Anonymat total possible — aucun nom requis.<br>
+    ✓ Un message WhatsApp s'ouvrira automatiquement.
+  </p>
+</div>
+
+<!-- ══ BLOC 5 — QUI SOMMES-NOUS ══ -->
+
+<div class="bloc bloc-info">
+  <p class="titre">À propos</p>
+  <div class="info-item">
+    <span class="e">🎯</span>
+    <span>Nous <strong>écoutons</strong> et <strong>orientons</strong>. Pas un service d'intervention directe.</span>
+  </div>
+  <div class="info-item">
+    <span class="e">🔒</span>
+    <span>Signalements <strong>confidentiels</strong>. Anonymat respecté.</span>
+  </div>
+  <div class="info-item">
+    <span class="e">🏛️</span>
+    <span><strong>Nouvel Espoir ONG</strong> — N°2024-4/025/PDB/SG/SAG/SA — Parakou, Bénin.</span>
+  </div>
+  <div class="info-item">
+    <span class="e">📍</span>
+    <span>Service disponible pour toute personne au <strong>Bénin</strong>.</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+<footer>
+  <p>
+    <strong>Ligne Espoir — Nouvel Espoir ONG Bénin</strong><br>
+    Informations vérifiées — Avril 2025<br>
+    117 · 166 · 118 — Ces numéros peuvent évoluer.<br>
+    En cas de doute, rendez-vous au commissariat le plus proche.
+  </p>
+</footer>
+
+<div id="toast">✅ Signalement envoyé sur WhatsApp</div>
+
+<script>
+  function quitterVite() {
+    try { history.replaceState(null, '', '/'); } catch(e) {}
+    window.location.replace('https://www.google.com/search?q=m%C3%A9t%C3%A9o+b%C3%A9nin');
+  }
+
+  async function submitForm() {
+    const type = document.getElementById('type-violence').value;
+    const loc  = document.getElementById('localisation').value.trim();
+    if (!type) { alert('Choisissez un type de situation.'); return; }
+    if (!loc)  { alert('Indiquez votre ville ou département.'); return; }
+
+    const btn = document.querySelector('.btn-envoyer');
+    btn.textContent = 'Ouverture WhatsApp…';
+    btn.disabled = true;
+
+    const msg = encodeURIComponent(
+      '🔴 *SIGNALEMENT — Ligne Espoir*\n\n' +
+      '📌 *Situation :* ' + type + '\n' +
+      '📍 *Localisation :* ' + loc + '\n\n' +
+      '_Via formulaire web — Ligne Espoir_'
+    );
+    window.open('https://wa.me/2290164596381?text=' + msg, '_blank');
+
+    try {
+      await fetch('https://formspree.io/f/mgoldabp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          'Situation': type,
+          'Localisation': loc,
+          '_subject': '🔴 Signalement Ligne Espoir — ' + type + ' — ' + loc
+        })
+      });
+    } catch(e) {}
+
+    document.getElementById('type-violence').value = '';
+    document.getElementById('localisation').value = '';
+    btn.textContent = 'Envoyer via WhatsApp →';
+    btn.disabled = false;
+
+    const t = document.getElementById('toast');
+    t.classList.add('visible');
+    setTimeout(() => t.classList.remove('visible'), 5000);
+  }
+</script>
+
+</body>
+</html>
